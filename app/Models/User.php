@@ -4,19 +4,22 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use App\Models\userData;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Order;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Bavix\Wallet\Interfaces\Confirmable;
+use Bavix\Wallet\Traits\CanConfirm;
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Traits\HasWalletFloat;
+use App\Models\Bill;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Bavix\Wallet\Interfaces\Wallet;
+use Bavix\Wallet\Interfaces\WalletFloat;
 
-class User extends Authenticatable
+class User extends Authenticatable implements Wallet, Confirmable,WalletFloat
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,HasApiTokens;
+    use HasFactory, Notifiable,HasApiTokens,CanConfirm,HasWalletFloat;
 
     /**
      * The attributes that are mass assignable.
@@ -28,7 +31,8 @@ class User extends Authenticatable
         'email',
         'password',
         'phone',
-        'address'
+        'address',
+        'fcm_token'
     ];
 
     /**
@@ -55,6 +59,10 @@ class User extends Authenticatable
     }
 
 
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
+    }
 
 
 
@@ -68,5 +76,15 @@ class User extends Authenticatable
      }
     }
 
+
+    /**
+     * Get all of the bills for the User
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function bills(): HasMany
+    {
+        return $this->hasMany(Bill::class);
+    }
 
 }

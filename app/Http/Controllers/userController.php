@@ -9,7 +9,7 @@ use App\Http\Requests\AuthUserRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 
-class userController extends Controller
+class UserController extends Controller
 {
 
 
