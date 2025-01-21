@@ -121,52 +121,36 @@ class BillController extends Controller
         //     "recipt date"=>$purchasedOn
         //    // "request"=> $request->all(),
         // ],200);
-
-
-
-
-
-
-
-
     }
 
 
     public function list(Request $request)
     {
         $response = Bill::with('share', 'store')->where("user_id", Auth::user()->id)->get();
-
         // Loop through the response and get the transaction by transaction_id
         $response->each(function ($bill) {
             $transaction = Transaction::find($bill->transaction_id);
             $bill->transaction = $transaction;
         });
-
         return response()->json([
             "data" => $response,
             // "request" => $request->all(),
         ], 200);
     }
-
-
-
     /**
      * Display the specified resource.
      */
-
     public function get(Request $request)
     {
-
         try {
-
+   $friends = User::where("id", '!=', Auth::user()->id)->select(['id', 'name'])->get();
             $bill = Bill::findOrFail($request->input("billId"));
             if ($bill->user_id == Auth::user()->id) {
                 return response()->json([
                     "data" => $bill,
-                    "friends" => User::where("id", '!=', Auth::user()->id)->select(['id', 'name', 'email'])->get()
+                    "friends" => $friends
                 ], 200);
             } else {
-
                 return response()->json([
                     "message" => "You are not authorized to view this record",
                 ], 403);
@@ -178,31 +162,18 @@ class BillController extends Controller
             ], 400);
         }
     }
-
     public function devide(Request $request)
     {
-
-
-
-
         $billobj = (object)$request->billId;
         // return response()->json([
         //     'data'=> $billobj->id
         //     ],200);
-
         $bill = Bill::findOrFail($billobj->id);
-
         //  return response()->json([
         //              'store'=> $bill->store
         //          ],200);
-
-
-
-
         $friendsArray = [];
         foreach ($request->selected as $select) {
-
-
             $obj = (object) $select;
             $user2 = User::find($obj->id);
             $metaContract =  new Extra(
@@ -211,9 +182,6 @@ class BillController extends Controller
                         'type' => 'offer-share-desposit',
                         'user' => Auth::user(),
                         'store' => $bill->store
-
-
-
                     ],
                     true // confirmed
                 ),
@@ -245,9 +213,13 @@ class BillController extends Controller
         ]);
         $bill->update(["status" => 'shared']);
 
-        Auth::user()->notify(new WithdrawSuccessful($amount, $user2->name));
-
-        $user2->notify(new DepositSuccessful($amount, Auth::user()->name));
+        try {
+            Auth::user()->notify(new WithdrawSuccessful($amount, $user2->name));
+            $user2->notify(new DepositSuccessful($amount, Auth::user()->name));
+        } catch (\Exception $e) {
+            // Log the error or handle it as needed
+           // \Log::error('Notification error: ' . $e->getMessage());
+        }
 
 
 

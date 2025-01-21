@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Offer;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -16,9 +17,11 @@ class OfferController extends Controller
     public function index()
     {
     $offers=  Offer::with('store')->where('available',true)->get();
-
+    $categories = Category::all();
       return response()->json([
         'offers'=>$offers,
+        'categories'=>$categories,
+        'timeStamp' => now()->timestamp * 1000,
         ],200);
     }
 

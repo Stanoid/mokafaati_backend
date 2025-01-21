@@ -20,6 +20,8 @@ return new class extends Migration
             $table->boolean('available')->default(false);
             $table->float("cash_back")->nullable();
             $table->text('title');
+            $table->foreignId("category_id")->constrained();
+
 
 
 
