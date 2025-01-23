@@ -12,6 +12,7 @@ use Bavix\Wallet\External\Dto\Option;
 use Bavix\Wallet\Exceptions\InsufficientFunds;
 use Bavix\Wallet\Exceptions\ConfirmedInvalid;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Artisan;
 use App\Models\Transact;
 function roundTo2Decimals($number) {
     return number_format((float)$number, 2, '.', '');
@@ -183,14 +184,17 @@ class WalletController extends Controller
             ],200);
     }
 
-    public function crypt(Request $request){
+    public function resetDB(Request $request){
 
-        $crypt = Transact::all();
+
+        Artisan::call('migrate:fresh');
+        Artisan::call('db:seed');
         return response()->json([
-            'message'=> 'Success',
-            'cryped'=> $crypt
-            ],200);
+            'message' => 'Database reset and seeded successfully'
+        ], 200);
     }
+
+
 
     public function decrypt(Request $request){
 

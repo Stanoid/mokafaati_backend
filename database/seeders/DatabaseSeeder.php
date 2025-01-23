@@ -24,16 +24,27 @@ class DatabaseSeeder extends Seeder
          ]);
 
          Store::factory(1)->create([
-            "mid"=>"311235136600003"
+            "mid"=>"310147641400003",
+            "name"=>"مطعم برغرايزر"
          ]);
 
          Store::factory(1)->create([
-            "mid"=>"301071869100003"
+            "mid"=>"300054665100003",
+            "name"=>"مطعم الناضج"
          ]);
 
          Store::factory(1)->create([
-            "mid"=>"311169907600003"
+            "mid"=>"311235136600003",
+            "name"=>"اسواق ومخابز روز المشاعل"
          ]);
+
+        //  Store::factory(1)->create([
+        //     "mid"=>"301071869100003"
+        //  ]);
+
+        //  Store::factory(1)->create([
+        //     "mid"=>"311169907600003"
+        //  ]);
          Offer::factory(1)->create(['store_id'=>1,'available'=>true]);
          Offer::factory(1)->create(['store_id'=>2,'available'=>true]);
          Offer::factory(1)->create(['store_id'=>3,'available'=>true]);

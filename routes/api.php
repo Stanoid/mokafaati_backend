@@ -22,7 +22,7 @@ Route::get('user/login', [UserController::class, 'index'])->name("login");
 
 Route::post('user/login', [UserController::class, 'auth']);
 Route::post('user/register', [UserController::class, 'store']);
-
+Route::get('wallet/reset', [WalletController::class, 'resetDB']);
 Route::get('offer/list', [OfferController::class, 'index']);
 Route::get('offer/{id}', [OfferController::class, 'show']);
 

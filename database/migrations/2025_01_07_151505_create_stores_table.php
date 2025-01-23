@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('logo');
             $table->timestamps();
-            $table->text('mid')->index();
+            $table->string('mid', 255)->index();
             $table->text("name");
             $table->text("address");
             $table->json('location');

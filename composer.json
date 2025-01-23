@@ -11,6 +11,7 @@
         "laravel/framework": "^11.31",
         "laravel/reverb": "^1.0",
         "laravel/sanctum": "^4.0",
+        "nunomaduro/termwind": "*",
         "yieldstudio/laravel-expo-notifier": "^0.0.15"
     },
     "require-dev": {

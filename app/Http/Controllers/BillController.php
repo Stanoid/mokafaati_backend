@@ -43,17 +43,17 @@ class BillController extends Controller
     {
 
         $store = Store::where('mid', '=', $request->mid)->first();
+
+        if (!$store) {
+            return response()->json([
+                "message" => "This store is not registered to mokafaati",
+                "code" => "SCN_2" //store not registered
+            ], 400);
+        }
         $offer = $store->offers->where('available', true)->first();
 
         $purchasedOn = Carbon::parse($request->purchasedOn);
         $endDate = Carbon::parse($offer->end_date);
-
-        //    return response()->json([
-        //     "offer"=>$offer,
-        //     "offer end"=> $endDate,
-        //     "recipt date"=>$purchasedOn
-        //    // "request"=> $request->all(),
-        // ],200);
 
 
         if ($purchasedOn->lt($endDate)) {
@@ -66,12 +66,12 @@ class BillController extends Controller
                 //  if($bill === 0){
                 if (true) {
                     $response = Auth::user()->bills()->create([
-                        'mid'=>$request->mid,
-                        'points'=>($request->points * ($offer->cash_back/100)), //beware of confusion
-                        'amount'=>$request->points,
-                        'purchasedOn'=>$request->purchasedOn,
-                        'nameOnBill'=>$request->nameOnBill,
-                        'rawBill'=>$request->rawBill,
+                        'mid' => $request->mid,
+                        'points' => ($request->points * ($offer->cash_back / 100)), //beware of confusion
+                        'amount' => $request->points,
+                        'purchasedOn' => $request->purchasedOn,
+                        'nameOnBill' => $request->nameOnBill,
+                        'rawBill' => $request->rawBill,
                     ]);
 
                     try {
@@ -83,7 +83,6 @@ class BillController extends Controller
                         $user = User::findOrFail(Auth::user()->id);
                         $transaction = $user->depositFloat($response->points, $metaContract, true); //true for confirmed
                         $finalBill = $response->update(['transaction_id' => $transaction->id]);
-
                     } catch (ModelNotFoundException $e) {
                         return response()->json([
                             'message' => $e->getMessage(),
@@ -92,8 +91,8 @@ class BillController extends Controller
                     }
                     return response()->json([
                         "data" => $response,
-                        'offer'=>$offer,
-                        'store'=>$store
+                        'offer' => $offer,
+                        'store' => $store
                         // "request"=> $request->all(),
                     ], 200);
                 } else {
@@ -189,8 +188,16 @@ class BillController extends Controller
         // return response()->json([
         //     'data'=> $billobj->id
         //     ],200);
-
         $bill = Bill::findOrFail($billobj->id);
+
+        if($bill->status == 'shared'){
+            return response()->json([
+                'message'=> 'This bill is already shared',
+                "code" => "DVI_1" //bill already shared
+            ],400);
+        }
+
+
 
         //  return response()->json([
         //              'store'=> $bill->store
