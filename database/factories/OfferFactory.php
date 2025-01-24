@@ -21,7 +21,7 @@ class OfferFactory extends Factory
             'start_date' => fake()->dateTimeThisMonth(),
             'end_date' => fake()->dateTimeBetween('now', '+4 days'),
             'title' => fake('ar_SA')->realText(),
-            'cash_back'=>fake()->numberBetween(3,15),
+            'cash_back'=>fake()->numberBetween(1,10),
         ];
     }
 }

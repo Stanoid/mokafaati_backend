@@ -16,7 +16,8 @@ use Bavix\Wallet\External\Dto\Extra;
 use Bavix\Wallet\Models\Transaction;
 use App\Notifications\WithdrawSuccessful;
 use App\Notifications\DepositSuccessful;
-
+use App\Events\BillDevided;
+use App\Jobs\DepositNotificationJob;
 class BillController extends Controller
 {
     /**
@@ -41,7 +42,7 @@ class BillController extends Controller
      */
     public function store(StoreBillRequest $request)
     {
-
+        $auth_user =  Auth::user();
         $store = Store::where('mid', '=', $request->mid)->first();
 
         if (!$store) {
@@ -65,7 +66,7 @@ class BillController extends Controller
 
                 //  if($bill === 0){
                 if (true) {
-                    $response = Auth::user()->bills()->create([
+                    $response = $auth_user->bills()->create([
                         'mid' => $request->mid,
                         'points' => ($request->points * ($offer->cash_back / 100)), //beware of confusion
                         'amount' => $request->points,
@@ -80,7 +81,7 @@ class BillController extends Controller
                         $metaContract =  ["store" => $store, 'type' => 'offer-direct-desposit'];
 
 
-                        $user = User::findOrFail(Auth::user()->id);
+                        $user = User::findOrFail($auth_user->id);
                         $transaction = $user->depositFloat($response->points, $metaContract, true); //true for confirmed
                         $finalBill = $response->update(['transaction_id' => $transaction->id]);
                     } catch (ModelNotFoundException $e) {
@@ -190,12 +191,12 @@ class BillController extends Controller
         //     ],200);
         $bill = Bill::findOrFail($billobj->id);
 
-        if($bill->status == 'shared'){
-            return response()->json([
-                'message'=> 'This bill is already shared',
-                "code" => "DVI_1" //bill already shared
-            ],400);
-        }
+        // if($bill->status == 'shared'){
+        //     return response()->json([
+        //         'message'=> 'This bill is already shared',
+        //         "code" => "DVI_1" //bill already shared
+        //     ],400);
+        // }
 
 
 
@@ -250,13 +251,13 @@ class BillController extends Controller
         $billshare = $bill->share()->create([
             'friends' => json_encode($friendsArray),
         ]);
-        $bill->update(["status" => 'shared']);
+        $bill->select('status')->update(["status" => 'shared']);
 
-        Auth::user()->notify(new WithdrawSuccessful($amount, $user2->name));
+        // Auth::user()->notify(new WithdrawSuccessful($amount, $user2->name));
 
-        $user2->notify(new DepositSuccessful($amount, Auth::user()->name));
+        // $user2->notify(new DepositSuccessful($amount, Auth::user()->name));
 
-
+        DepositNotificationJob::dispatch($bill->id);
 
         return response()->json([
             'data' => $arr

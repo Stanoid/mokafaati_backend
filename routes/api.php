@@ -8,6 +8,7 @@ use App\Http\Middleware\Admin;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\FcmController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\TestController;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -18,6 +19,7 @@ Route::get('/user', function (Request $request) {
 
 
 Route::get('user/login', [UserController::class, 'index'])->name("login");
+Route::post('test/index', [TestController::class, 'index']);
 
 
 Route::post('user/login', [UserController::class, 'auth']);
