@@ -38,7 +38,7 @@ class DepositSuccessful extends Notification
     {
        // return ['database'];
         //return [FcmChannel::class];
-        return [ExpoNotificationsChannel::class];
+        return [ExpoNotificationsChannel::class,'database'];
     }
 
     /**
@@ -66,13 +66,27 @@ class DepositSuccessful extends Notification
 
     }
 
-    public function toExpoNotification($notifiable): ExpoMessage
+    public function toExpoNotification($notifiable): ExpoMessage | string
     {
-        return (new ExpoMessage())
+        try {
+
+            if($notifiable->fcm_token){
+            return (new ExpoMessage())
+
             ->to([$notifiable->fcm_token])
             ->title('Points recived')
             ->body($this->amount .' points recived from '.$this->from)
             ->channelId('default');
+            }else{
+                return "user dosent have fcm token";
+            }
+        } catch (\Exception $e) {
+            // Handle the exception, you can log it or take other actions
+            // Log::error('Failed to send Expo notification: ' . $e->getMessage());
+            return "user dosent have fcm token"; ;
+        }
+
+
     }
 
 

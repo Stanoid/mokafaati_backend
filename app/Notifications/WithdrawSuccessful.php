@@ -67,13 +67,25 @@ class WithdrawSuccessful extends Notification
 
     }
 
-    public function toExpoNotification($notifiable): ExpoMessage
+    public function toExpoNotification($notifiable): ExpoMessage | string
     {
-        return (new ExpoMessage())
-            ->to([$notifiable->fcm_token])
-            ->title('Points sent ')
-            ->body($this->amount .' points was successfully sent to'.$this->to)
-            ->channelId('default');
+        try {
+
+            if($notifiable->fcm_token){
+              return (new ExpoMessage())
+              ->to([$notifiable->fcm_token])
+              ->title('Points sent ')
+              ->body($this->amount .' points was successfully sent to'.$this->to)
+              ->channelId('default');
+            }else{
+                return "user does not have an expo token";
+            }
+
+        } catch (\Exception $e) {
+            // Handle the exception, you can log it or take other actions
+            // \Log::error('Failed to send Expo notification: ' . $e->getMessage());
+            return "user does not have an expo token";
+        }
     }
 
 

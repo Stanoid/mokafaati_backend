@@ -10,18 +10,17 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
-
-
-class WalletDeposit implements ShouldQueue
+class BillDevided implements ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    public function __construct()
+    public $id;
+    public function __construct($id)
     {
-        //
+        $this->id = $id;
     }
 
     /**
@@ -32,7 +31,7 @@ class WalletDeposit implements ShouldQueue
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('channel-name'),
+            new PrivateChannel('notifications'),
         ];
     }
 }
