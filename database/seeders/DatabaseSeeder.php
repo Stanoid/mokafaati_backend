@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Store;
 use App\Models\Offer;
+use App\Models\Category;
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -28,6 +29,8 @@ class DatabaseSeeder extends Seeder
             "name"=>"مطعم برغرايزر"
          ]);
 
+
+
          Store::factory(1)->create([
             "mid"=>"300054665100003",
             "name"=>"مطعم الناضج"
@@ -38,6 +41,7 @@ class DatabaseSeeder extends Seeder
             "name"=>"اسواق ومخابز روز المشاعل"
          ]);
 
+
         //  Store::factory(1)->create([
         //     "mid"=>"301071869100003"
         //  ]);
@@ -45,13 +49,13 @@ class DatabaseSeeder extends Seeder
         //  Store::factory(1)->create([
         //     "mid"=>"311169907600003"
         //  ]);
+
          Offer::factory(1)->create(['store_id'=>1,'available'=>true]);
          Offer::factory(1)->create(['store_id'=>2,'available'=>true]);
          Offer::factory(1)->create(['store_id'=>3,'available'=>true]);
 
 
-         Offer::factory(1)->create();
-         Offer::factory(1)->create();
+         Offer::factory(10)->create();
 
          User::factory(1)->create([
 

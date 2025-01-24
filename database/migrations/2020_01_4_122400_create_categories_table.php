@@ -16,7 +16,6 @@ return new class extends Migration
             $table->timestamps();
             $table->text('name');
             $table->text('img');
-            $table->foreignId('offer_id')->constrained();
 
         });
     }
